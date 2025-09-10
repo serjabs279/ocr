@@ -1,47 +1,72 @@
 <script setup lang="ts">
+// This imports the ref function from the vue library, which is used to create reactive variables.
 import { ref } from 'vue';
 
+// This defines the events that this component can emit.
 const emit = defineEmits(['close-login', 'login-success']);
 
+// This creates a reactive variable that stores the user's email.
 const email = ref('');
+// This creates a reactive variable that stores the user's password.
 const password = ref('');
+// This creates a reactive variable that stores the user's type.
 const userType = ref('student'); // 'student' or 'admin'
+// This creates a reactive variable that stores an error message, if any.
 const errorMessage = ref('');
 
+// This function is called when the user submits the login form.
 const handleLogin = () => {
-  // Mock user data
+  // This is a mock user data for demonstration purposes.
   const mockStudent = { email: 'student@example.com', password: 'password123' };
   const mockAdmin = { email: 'admin@example.com', password: 'adminpassword' };
 
+  // This resets the error message.
   errorMessage.value = '';
 
+  // This checks if the user is a student.
   if (userType.value === 'student') {
+    // This checks if the user's credentials are valid.
     if (email.value === mockStudent.email && password.value === mockStudent.password) {
+      // This emits the "login-success" event, which is handled by the parent component.
       emit('login-success');
     } else {
+      // This sets the error message.
       errorMessage.value = 'Invalid student credentials.';
     }
+  // This checks if the user is an admin.
   } else if (userType.value === 'admin') {
+    // This checks if the user's credentials are valid.
     if (email.value === mockAdmin.email && password.value === mockAdmin.password) {
+      // This emits the "login-success" event, which is handled by the parent component.
       emit('login-success');
     } else {
+      // This sets the error message.
       errorMessage.value = 'Invalid admin credentials.';
     }
   }
 };
 
+// This function is called when the user closes the login modal.
 const handleClose = () => {
+  // This emits the "close-login" event, which is handled by the parent component.
   emit('close-login');
 };
 </script>
 
 <template>
+  <!-- This is the main container for the login modal. -->
   <div class="modal-overlay" @click.self="handleClose">
+    <!-- This is the content of the login modal. -->
     <div class="modal-content">
+      <!-- This is the close button for the login modal. -->
       <button class="close-button" @click="handleClose">&times;</button>
+      <!-- This is the title of the login modal. -->
       <h2>Login</h2>
+      <!-- This is the login form. -->
       <form @submit.prevent="handleLogin">
+        <!-- This is the user type toggle. -->
         <div class="user-type-toggle">
+          <!-- This is the student button. -->
           <button
             type="button"
             :class="{ active: userType === 'student' }"
@@ -49,6 +74,7 @@ const handleClose = () => {
           >
             Student
           </button>
+          <!-- This is the admin button. -->
           <button
             type="button"
             :class="{ active: userType === 'admin' }"
@@ -57,6 +83,7 @@ const handleClose = () => {
             Admin
           </button>
         </div>
+        <!-- This is the email input group. -->
         <div class="input-group">
           <label for="email">Email</label>
           <input
@@ -67,6 +94,7 @@ const handleClose = () => {
             placeholder="Enter your email"
           />
         </div>
+        <!-- This is the password input group. -->
         <div class="input-group">
           <label for="password">Password</label>
           <input
@@ -77,11 +105,15 @@ const handleClose = () => {
             placeholder="Enter your password"
           />
         </div>
+        <!-- This is the error message. -->
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <!-- This is the extra options section. -->
         <div class="extra-options">
           <a href="#" class="forgot-password">Forgot Password?</a>
         </div>
+        <!-- This is the login button. -->
         <button type="submit" class="login-button">Login</button>
+        <!-- This is the cancel button. -->
         <button type="button" @click="handleClose" class="cancel-button">Cancel</button>
       </form>
     </div>
@@ -89,6 +121,7 @@ const handleClose = () => {
 </template>
 
 <style scoped>
+/* This is where the styles for the Login component are defined. The "scoped" attribute means that the styles will only apply to this component. */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -174,7 +207,7 @@ h2 {
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-sizu: 1rem;
+  font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 

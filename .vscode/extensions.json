@@ -1,3 +1,7 @@
 {
-  "recommendations": ["Vue.volar"]
+  // This file contains a list of recommended VS Code extensions for this project.
+  "recommendations": [
+    // This is the official Vue.js extension for VS Code.
+    "Vue.volar"
+  ]
 }

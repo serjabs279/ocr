@@ -1,37 +1,21 @@
 {
-  // The name of the package.
   "name": "myapp",
-  // Specifies that this package is private and will not be published to npm.
   "private": true,
-  // The version of the application.
   "version": "0.0.0",
-  // Specifies that the project uses ES modules.
   "type": "module",
-  // Contains scripts that can be run using npm.
   "scripts": {
-    // Starts the development server.
     "dev": "vite",
-    // Builds the application for production.
     "build": "vite build",
-    // Serves the production build locally for preview.
     "preview": "vite preview"
   },
-  // Contains dependencies that are required for the application to run.
   "dependencies": {
-    // A general-purpose, web standards-based platform for parsing and rendering PDFs. It is used in this project for handling PDF files.
     "pdfjs-dist": "^4.0.379",
-    // An OCR (Optical Character Recognition) library that can be used to extract text from images. It is used in this project for extracting text from transcript images.
     "tesseract.js": "^5.0.4",
-    // The core Vue.js library.
     "vue": "^3.3.11"
   },
-  // Contains dependencies that are only required for development.
   "devDependencies": {
-    // The official Vite plugin for Vue.js.
     "@vitejs/plugin-vue": "^4.5.2",
-    // The development server and build tool.
     "vite": "^5.0.10",
-    // The TypeScript compiler.
     "typescript": "^5.3.3"
   }
 }

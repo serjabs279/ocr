@@ -1,74 +1,228 @@
+/*
+This is the root stylesheet for the application.
+*/
+
+/*
+This defines the root variables for the application.
+*/
 :root {
+  /*
+  This sets the font family for the application.
+  */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /*
+  This sets the line height for the application.
+  */
   line-height: 1.5;
+  /*
+  This sets the font weight for the application.
+  */
   font-weight: 400;
 
+  /*
+  This sets the color scheme for the application.
+  */
   color-scheme: light dark;
+  /*
+  This sets the text color for the application.
+  */
   color: rgba(255, 255, 255, 0.87);
+  /*
+  This sets the background color for the application.
+  */
   background-color: #242424;
 
+  /*
+  This disables font synthesis for the application.
+  */
   font-synthesis: none;
+  /*
+  This optimizes text rendering for legibility.
+  */
   text-rendering: optimizeLegibility;
+  /*
+  This enables font anti-aliasing for Webkit browsers.
+  */
   -webkit-font-smoothing: antialiased;
+  /*
+  This enables font anti-aliasing for Mozilla browsers.
+  */
   -moz-osx-font-smoothing: grayscale;
 }
 
+/*
+This styles the links in the application.
+*/
 a {
+  /*
+  This sets the font weight for links.
+  */
   font-weight: 500;
+  /*
+  This sets the color for links.
+  */
   color: #646cff;
+  /*
+  This inherits the text decoration for links.
+  */
   text-decoration: inherit;
 }
+/*
+This styles the links when they are hovered over.
+*/
 a:hover {
+  /*
+  This sets the color for links when they are hovered over.
+  */
   color: #535bf2;
 }
 
+/*
+This styles the body of the application.
+*/
 body {
+  /*
+  This removes the margin from the body.
+  */
   margin: 0;
+  /*
+  This sets the minimum width of the body.
+  */
   min-width: 320px;
+  /*
+  This sets the minimum height of the body.
+  */
   min-height: 100vh;
 }
 
+/*
+This styles the h1 elements in the application.
+*/
 h1 {
+  /*
+  This sets the font size for h1 elements.
+  */
   font-size: 3.2em;
+  /*
+  This sets the line height for h1 elements.
+  */
   line-height: 1.1;
 }
 
+/*
+This styles the buttons in the application.
+*/
 button {
+  /*
+  This sets the border radius for buttons.
+  */
   border-radius: 8px;
+  /*
+  This sets the border for buttons.
+  */
   border: 1px solid transparent;
+  /*
+  This sets the padding for buttons.
+  */
   padding: 0.6em 1.2em;
+  /*
+  This sets the font size for buttons.
+  */
   font-size: 1em;
+  /*
+  This sets the font weight for buttons.
+  */
   font-weight: 500;
+  /*
+  This inherits the font family for buttons.
+  */
   font-family: inherit;
+  /*
+  This sets the background color for buttons.
+  */
   background-color: #1a1a1a;
+  /*
+  This sets the cursor for buttons.
+  */
   cursor: pointer;
+  /*
+  This sets the transition for the border color of buttons.
+  */
   transition: border-color 0.25s;
 }
+/*
+This styles the buttons when they are hovered over.
+*/
 button:hover {
+  /*
+  This sets the border color for buttons when they are hovered over.
+  */
   border-color: #646cff;
 }
+/*
+This styles the buttons when they are focused.
+*/
 button:focus,
 button:focus-visible {
+  /*
+  This sets the outline for buttons when they are focused.
+  */
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/*
+This styles the cards in the application.
+*/
 .card {
+  /*
+  This sets the padding for cards.
+  */
   padding: 2em;
 }
 
+/*
+This styles the root element of the application.
+*/
 #app {
-  width:100%
+  /*
+  This sets the width of the root element to 100%.
+  */
+  width: 100%;
 }
 
+/*
+This defines the styles for the light color scheme.
+*/
 @media (prefers-color-scheme: light) {
+  /*
+  This defines the root variables for the light color scheme.
+  */
   :root {
+    /*
+    This sets the text color for the light color scheme.
+    */
     color: #213547;
+    /*
+    This sets the background color for the light color scheme.
+    */
     background-color: #ffffff;
   }
+  /*
+  This styles the links when they are hovered over in the light color scheme.
+  */
   a:hover {
+    /*
+    This sets the color for links when they are hovered over in the light color scheme.
+    */
     color: #747bff;
   }
+  /*
+  This styles the buttons in the light color scheme.
+  */
   button {
+    /*
+    This sets the background color for buttons in the light color scheme.
+    */
     background-color: #f9f9f9;
   }
 }
