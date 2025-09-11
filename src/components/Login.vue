@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // This imports the ref function from the vue library, which is used to create reactive variables.
 import { ref } from 'vue';
 

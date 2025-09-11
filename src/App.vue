@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // This imports the ref function from the vue library, which is used to create reactive variables.
 import { ref } from 'vue';
 // This imports the LandingPage component, which is the initial page the user sees.
@@ -52,5 +52,5 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-// This is where the styles for the App component are defined. The "scoped" attribute means that the styles will only apply to this component.
+/* This is where the styles for the App component are defined. The "scoped" attribute means that the styles will only apply to this component. */
 </style>

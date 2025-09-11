@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // This imports the ref and computed functions from the vue library, which are used to create reactive variables and computed properties.
 import { ref, computed } from 'vue';
 // This imports the createWorker function from the tesseract.js library, which is used to create a new Tesseract.js worker.
@@ -16,9 +16,9 @@ const emit = defineEmits(['logout']);
 // This creates a reactive variable that stores the active view.
 const activeView = ref('upload');
 // This creates a reactive variable that stores the uploaded file.
-const uploadedFile = ref<File | null>(null);
+const uploadedFile = ref(null);
 // This creates a reactive variable that stores the URL of the file preview.
-const filePreviewUrl = ref<string | null>(null);
+const filePreviewUrl = ref(null);
 // This creates a reactive variable that determines whether the text is being extracted or not.
 const isExtracting = ref(false);
 // This creates a reactive variable that stores the progress of the text extraction.
@@ -26,37 +26,10 @@ const extractionProgress = ref(0);
 // This creates a reactive variable that stores the extracted text.
 const extractedText = ref('');
 
-// This defines the interface for a course.
-interface Course {
-  grade: string;
-  descriptiveTitle: string;
-  courseNo: string;
-  lec: string;
-  lab: string;
-  units: string;
-  preRequisites: string;
-  coRequisites: string;
-}
-
-// This defines the interface for a semester.
-interface Semester {
-  title: string;
-  courses: Course[];
-  totalLec?: string;
-  totalLab?: string;
-  totalUnits?: string;
-}
-
-// This defines the interface for a year.
-interface Year {
-  title: string;
-  semesters: Semester[];
-}
-
 // This function is called when the user uploads a file.
-const handleFileUpload = (event: Event) => {
+const handleFileUpload = (event) => {
   // This gets the file from the event.
-  const target = event.target as HTMLInputElement;
+  const target = event.target;
   const file = target.files?.[0];
 
   // This revokes the object URL of the previous file preview, if any.
@@ -113,7 +86,7 @@ const handleExtraction = async () => {
         // This gets the text content of the page.
         const textContent = await page.getTextContent();
         // This gets the text of the page.
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+        const pageText = textContent.items.map((item) => item.str).join(' ');
         // This adds the text of the page to the full text.
         fullText += pageText + '\n';
         // This updates the extraction progress.
@@ -157,15 +130,15 @@ const handleExtraction = async () => {
 };
 
 // This computed property parses the extracted text and returns a curriculum.
-const parsedCurriculum = computed((): Year[] => {
+const parsedCurriculum = computed(() => {
   // This splits the extracted text into lines.
   const lines = extractedText.value.split('\n');
   // This creates an array to store the curriculum.
-  const curriculum: Year[] = [];
+  const curriculum = [];
   // This creates a variable to store the current year.
-  let currentYear: Year | null = null;
+  let currentYear = null;
   // This creates a variable to store the current semester.
-  let currentSemester: Semester | null = null;
+  let currentSemester = null;
 
   // This defines the regex for a year.
   const yearRegex = /(FIRST|SECOND|THIRD|FOURTH) YEAR/i;
@@ -247,77 +220,77 @@ const handleLogout = () => {
 </script>
 
 <template>
-  // This is the main container for the dashboard.
+  <!-- This is the main container for the dashboard. -->
   <div class="dashboard-layout">
-    // This is the sidebar of the dashboard.
+    <!-- This is the sidebar of the dashboard. -->
     <aside class="sidebar">
-      // This is the header of the sidebar.
+      <!-- This is the header of the sidebar. -->
       <div class="sidebar-header">
-        // This is the logo of the dashboard.
+        <!-- This is the logo of the dashboard. -->
         <span class="logo">🎓</span>
-        // This is the title of the sidebar.
+        <!-- This is the title of the sidebar. -->
         <h2 class="sidebar-title">Dashboard</h2>
       </div>
-      // This is the navigation of the sidebar.
+      <!-- This is the navigation of the sidebar. -->
       <nav class="sidebar-nav">
-        // This is the dashboard link.
+        <!-- This is the dashboard link. -->
         <a href="#" :class="{ active: activeView === 'dashboard' }" @click="activeView = 'dashboard'">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           <span class="nav-text">Dashboard</span>
         </a>
-        // This is the upload link.
+        <!-- This is the upload link. -->
         <a href="#" :class="{ active: activeView === 'upload' }" @click="activeView = 'upload'">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
           <span class="nav-text">Upload TOR</span>
         </a>
-        // This is the transcript extract link.
+        <!-- This is the transcript extract link. -->
         <a href="#" :class="{ active: activeView === 'extract' }" @click="activeView = 'extract'">
            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           <span class="nav-text">Transcript Extract</span>
         </a>
-        // This is the profile link.
+        <!-- This is the profile link. -->
         <a href="#">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span class="nav-text">Profile</span>
         </a>
-        // This is the settings link.
+        <!-- This is the settings link. -->
         <a href="#">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
           <span class="nav-text">Settings</span>
         </a>
       </nav>
-      // This is the footer of the sidebar.
+      <!-- This is the footer of the sidebar. -->
       <div class="sidebar-footer">
-        // This is the logout button.
+        <!-- This is the logout button. -->
         <a href="#" @click.prevent="handleLogout" class="logout-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
           <span class="nav-text">Logout</span>
         </a>
       </div>
     </aside>
-    // This is the main content of the dashboard.
+    <!-- This is the main content of the dashboard. -->
     <main class="main-content">
-      // This is the dashboard view.
+      <!-- This is the dashboard view. -->
       <div v-if="activeView === 'dashboard'" class="dashboard-view">
         <h1>Welcome, Student!</h1>
         <p>This is your dashboard. You can navigate using the sidebar.</p>
       </div>
-      // This is the upload view.
+      <!-- This is the upload view. -->
       <div v-if="activeView === 'upload'" class="upload-view">
         <h2>Upload Transcript of Records</h2>
-        // This is the upload box.
+        <!-- This is the upload box. -->
         <div class="upload-box">
           <input type="file" @change="handleFileUpload" accept=".jpg, .jpeg, .png, .pdf" />
           <p>Drag and drop your file here or click to browse.</p>
         </div>
 
-        // This is the image preview section.
+        <!-- This is the image preview section. -->
         <div v-if="filePreviewUrl" class="image-preview-section">
           <h3>Preview:</h3>
           <img :src="filePreviewUrl" alt="Transcript Preview" class="image-preview" />
         </div>
 
-        // This is the extraction section.
+        <!-- This is the extraction section. -->
         <div v-if="uploadedFile" class="extraction-section">
           <p>File selected: <strong>{{ uploadedFile.name }}</strong></p>
           <button @click="handleExtraction" :disabled="isExtracting">
@@ -326,15 +299,15 @@ const handleLogout = () => {
           </button>
         </div>
 
-        // This is the curriculum view.
+        <!-- This is the curriculum view. -->
         <div v-if="parsedCurriculum.length > 0" class="curriculum-view">
-          // This loops through the years of the curriculum.
+          <!-- This loops through the years of the curriculum. -->
           <div v-for="year in parsedCurriculum" :key="year.title" class="year-section">
             <h2>{{ year.title }}</h2>
-            // This loops through the semesters of the year.
+            <!-- This loops through the semesters of the year. -->
             <div v-for="semester in year.semesters" :key="semester.title" class="semester-section">
               <h3>{{ semester.title }}</h3>
-              // This is the courses table.
+              <!-- This is the courses table. -->
               <table class="courses-table">
                 <thead>
                   <tr>
@@ -349,7 +322,7 @@ const handleLogout = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  // This loops through the courses of the semester.
+                  <!-- This loops through the courses of the semester. -->
                   <tr v-for="(course, index) in semester.courses" :key="index">
                     <td>{{ course.grade }}</td>
                     <td>{{ course.descriptiveTitle }}</td>
@@ -361,7 +334,7 @@ const handleLogout = () => {
                     <td>{{ course.coRequisites }}</td>
                   </tr>
                 </tbody>
-                // This is the footer of the courses table.
+                <!-- This is the footer of the courses table. -->
                 <tfoot v-if="semester.totalLec">
                     <tr>
                         <td colspan="3" style="text-align: right; font-weight: bold;">Total</td>
@@ -375,13 +348,13 @@ const handleLogout = () => {
             </div>
           </div>
         </div>
-        // This is the extracted text view.
+        <!-- This is the extracted text view. -->
         <div v-else-if="extractedText.length > 0">
           <h3>Extracted Text Result:</h3>
           <pre class="extracted-text">{{ extractedText }}</pre>
         </div>
       </div>
-       // This is the extract view.
+       <!-- This is the extract view. -->
        <div v-if="activeView === 'extract'" class="extract-view">
         <TranscriptExtract />
       </div>
@@ -390,7 +363,7 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-// This is where the styles for the StudentDashboard component are defined. The "scoped" attribute means that the styles will only apply to this component.
+/* This is where the styles for the StudentDashboard component are defined. The "scoped" attribute means that the styles will only apply to this component. */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;

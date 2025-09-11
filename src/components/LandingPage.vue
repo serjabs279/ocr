@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 // This defines the events that this component can emit.
 const emit = defineEmits(['get-started']);
 
@@ -10,40 +10,40 @@ const handleClick = () => {
 </script>
 
 <template>
-  // This is the main container for the landing page.
+  <!-- This is the main container for the landing page. -->
   <div class="landing-page">
-    // This is the header of the landing page.
+    <!-- This is the header of the landing page. -->
     <header class="header">
-      // This is the title of the landing page.
+      <!-- This is the title of the landing page. -->
       <h1>Web-Based Subject Evaluation System for Transferee Students</h1>
     </header>
 
-    // This is the main content of the landing page.
+    <!-- This is the main content of the landing page. -->
     <main class="main-content">
-      // This is the hero section of the landing page.
+      <!-- This is the hero section of the landing page. -->
       <section class="hero">
-        // This is the subtitle of the hero section.
+        <!-- This is the subtitle of the hero section. -->
         <h2>Streamline Your Subject Evaluation Process</h2>
-        // This is the description of the hero section.
+        <!-- This is the description of the hero section. -->
         <p>
           Our system simplifies the process of evaluating subjects for transferee
           students, ensuring a smooth and efficient transition.
         </p>
-        // This is the call-to-action button.
+        <!-- This is the call-to-action button. -->
         <button class="cta-button" @click="handleClick">Get Started</button>
       </section>
     </main>
 
-    // This is the footer of the landing page.
+    <!-- This is the footer of the landing page. -->
     <footer class="footer">
-      // This is the copyright notice.
+      <!-- This is the copyright notice. -->
       <p>&copy; 2024 Subject Evaluation System. All rights reserved.</p>
     </footer>
   </div>
 </template>
 
 <style scoped>
-// This is where the styles for the LandingPage component are defined. The "scoped" attribute means that the styles will only apply to this component.
+/* This is where the styles for the LandingPage component are defined. The "scoped" attribute means that the styles will only apply to this component. */
 .landing-page {
   display: flex;
   flex-direction: column;
