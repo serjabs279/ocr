@@ -13,7 +13,7 @@ const showLoginModal = ref(false);
 // This creates a reactive variable that determines whether the user is logged in or not.
 const loggedIn = ref(false);
 
-// This function is called when the user clicks the "Get Started" button on the landing page.
+// This function is called when the user clicks the "Log In" button on the landing page.
 const handleShowLogin = () => {
   // This sets the showLoginModal variable to true, which shows the login modal.
   showLoginModal.value = true;
@@ -44,7 +44,7 @@ const handleLogout = () => {
 <template>
   <div id="app">
     <div v-if="!loggedIn">
-      <LandingPage @get-started="handleShowLogin" />
+      <LandingPage @login="handleShowLogin" />
       <Login v-if="showLoginModal" @close-login="handleCloseLogin" @login-success="handleLoginSuccess" />
     </div>
     <StudentDashboard v-else @logout="handleLogout" />
