@@ -1,56 +1,70 @@
 <script setup>
-// This imports the ref function from the vue library, which is used to create reactive variables.
 import { ref } from 'vue';
-// This imports the LandingPage component, which is the initial page the user sees.
 import LandingPage from './components/LandingPage.vue';
-// This imports the Login component, which is a modal that allows the user to log in.
 import Login from './components/Login.vue';
-// This imports the StudentDashboard component, which is the main page the user sees after logging in.
 import StudentDashboard from './components/StudentDashboard.vue';
 
-// This creates a reactive variable that determines whether the login modal is shown or not.
 const showLoginModal = ref(false);
-// This creates a reactive variable that determines whether the user is logged in or not.
 const loggedIn = ref(false);
+const loginButtonRect = ref(null);
 
-// This function is called when the user clicks the "Log In" button on the landing page.
-const handleShowLogin = () => {
-  // This sets the showLoginModal variable to true, which shows the login modal.
+const handleShowLogin = ({ buttonRect }) => {
+  loginButtonRect.value = buttonRect;
   showLoginModal.value = true;
 };
 
-// This function is called when the user closes the login modal.
 const handleCloseLogin = () => {
-  // This sets the showLoginModal variable to false, which hides the login modal.
   showLoginModal.value = false;
 };
 
-// This function is called when the user successfully logs in.
 const handleLoginSuccess = () => {
-  // This sets the loggedIn variable to true, which shows the student dashboard.
   loggedIn.value = true;
-  // This sets the showLoginModal variable to false, which hides the login modal.
   showLoginModal.value = false;
 };
 
-// This function is called when the user logs out.
 const handleLogout = () => {
-  // This sets the loggedIn variable to false, which shows the landing page.
   loggedIn.value = false;
 };
 
+const beforeEnter = (el) => {
+  if (!loginButtonRect.value) return;
+
+  const { top, left, width, height } = loginButtonRect.value;
+  el.style.setProperty('--start-top', `${top + height / 2}px`);
+  el.style.setProperty('--start-left', `${left + width / 2}px`);
+};
 </script>
 
 <template>
   <div id="app">
     <div v-if="!loggedIn">
       <LandingPage @login="handleShowLogin" />
-      <Login v-if="showLoginModal" @close-login="handleCloseLogin" @login-success="handleLoginSuccess" />
+      <Transition name="genie" @before-enter="beforeEnter">
+        <Login v-if="showLoginModal" @close-login="handleCloseLogin" @login-success="handleLoginSuccess" />
+      </Transition>
     </div>
     <StudentDashboard v-else @logout="handleLogout" />
   </div>
 </template>
 
-<style scoped>
-/* This is where the styles for the App component are defined. The "scoped" attribute means that the styles will only apply to this component. */
+<style>
+:root {
+  --start-top: 50%;
+  --start-left: 50%;
+}
+
+.genie-enter-active,
+.genie-leave-active {
+  transition: all 0.5s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.genie-enter-from,
+.genie-leave-to {
+  clip-path: circle(0% at var(--start-left) var(--start-top));
+}
+
+.genie-enter-to,
+.genie-leave-from {
+  clip-path: circle(150% at 50% 50%);
+}
 </style>

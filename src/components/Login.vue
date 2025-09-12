@@ -1,72 +1,51 @@
 <script setup>
-// This imports the ref function from the vue library, which is used to create reactive variables.
 import { ref } from 'vue';
 
-// This defines the events that this component can emit.
 const emit = defineEmits(['close-login', 'login-success']);
 
-// This creates a reactive variable that stores the user's email.
 const email = ref('');
-// This creates a reactive variable that stores the user's password.
 const password = ref('');
-// This creates a reactive variable that stores the user's type.
 const userType = ref('student'); // 'student' or 'admin'
-// This creates a reactive variable that stores an error message, if any.
 const errorMessage = ref('');
 
-// This function is called when the user submits the login form.
 const handleLogin = () => {
-  // This is a mock user data for demonstration purposes.
   const mockStudent = { email: 'student@example.com', password: 'password123' };
   const mockAdmin = { email: 'admin@example.com', password: 'adminpassword' };
 
-  // This resets the error message.
   errorMessage.value = '';
 
-  // This checks if the user is a student.
   if (userType.value === 'student') {
-    // This checks if the user's credentials are valid.
     if (email.value === mockStudent.email && password.value === mockStudent.password) {
-      // This emits the "login-success" event, which is handled by the parent component.
       emit('login-success');
     } else {
-      // This sets the error message.
       errorMessage.value = 'Invalid student credentials.';
     }
-  // This checks if the user is an admin.
   } else if (userType.value === 'admin') {
-    // This checks if the user's credentials are valid.
     if (email.value === mockAdmin.email && password.value === mockAdmin.password) {
-      // This emits the "login-success" event, which is handled by the parent component.
       emit('login-success');
     } else {
-      // This sets the error message.
       errorMessage.value = 'Invalid admin credentials.';
     }
   }
 };
 
-// This function is called when the user closes the login modal.
 const handleClose = () => {
-  // This emits the "close-login" event, which is handled by the parent component.
   emit('close-login');
 };
 </script>
 
 <template>
-  <!-- This is the main container for the login modal. -->
   <div class="modal-overlay" @click.self="handleClose">
-    <!-- This is the content of the login modal. -->
     <div class="modal-content">
-      <!-- This is the close button for the login modal. -->
-      <button class="close-button" @click="handleClose">&times;</button>
-      <!-- This is the title of the login modal. -->
-      <h2>Login</h2>
-      <!-- This is the login form. -->
+      <div class="close-button" @click="handleClose">&times;</div>
+      
+      <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Log in to continue your session</p>
+      </div>
+
       <form @submit.prevent="handleLogin">
-        <!-- This is the user type toggle. -->
         <div class="user-type-toggle">
-          <!-- This is the student button. -->
           <button
             type="button"
             :class="{ active: userType === 'student' }"
@@ -74,7 +53,6 @@ const handleClose = () => {
           >
             Student
           </button>
-          <!-- This is the admin button. -->
           <button
             type="button"
             :class="{ active: userType === 'admin' }"
@@ -83,193 +61,203 @@ const handleClose = () => {
             Admin
           </button>
         </div>
-        <!-- This is the email input group. -->
+
         <div class="input-group">
-          <label for="email">Email</label>
           <input
             type="email"
             id="email"
             v-model="email"
             required
-            placeholder="Enter your email"
+            placeholder="Email Address"
           />
         </div>
-        <!-- This is the password input group. -->
+
         <div class="input-group">
-          <label for="password">Password</label>
           <input
             type="password"
             id="password"
             v-model="password"
             required
-            placeholder="Enter your password"
+            placeholder="Password"
           />
         </div>
-        <!-- This is the error message. -->
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <!-- This is the extra options section. -->
+        
         <div class="extra-options">
           <a href="#" class="forgot-password">Forgot Password?</a>
         </div>
-        <!-- This is the login button. -->
-        <button type="submit" class="login-button">Login</button>
-        <!-- This is the cancel button. -->
-        <button type="button" @click="handleClose" class="cancel-button">Cancel</button>
+        
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+        <button type="submit" class="login-button">Log In</button>
       </form>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* This is where the styles for the Login component are defined. The "scoped" attribute means that the styles will only apply to this component. */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fade-in 0.3s ease;
 }
 
 .modal-content {
   position: relative;
-  background-color: #ffffff;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  background-color: var(--feature-bg);
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
+  animation: slide-up 0.4s ease;
 }
 
 .close-button {
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  right: 1.5rem;
   border: none;
   background: transparent;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #888;
+  font-size: 2rem;
+  color: var(--text-light);
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
-h2 {
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  color: #333;
+.close-button:hover {
+    color: var(--white);
+}
+
+.login-header h2 {
+  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.login-header p {
+  margin-bottom: 2.5rem;
+  color: var(--text-light);
 }
 
 .user-type-toggle {
   display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  background-color: #e9ecef;
-  border-radius: 8px;
+  margin-bottom: 2rem;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
   overflow: hidden;
+  border: 1px solid #444;
 }
 
 .user-type-toggle button {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.9rem;
   border: none;
   background-color: transparent;
-  color: #555;
+  color: var(--text-light);
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .user-type-toggle button.active {
-  background-color: #42b883;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
   font-weight: 600;
+  box-shadow: 0 0 10px rgba(66, 184, 131, 0.5);
 }
 
 .input-group {
   margin-bottom: 1.5rem;
-  text-align: left;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #555;
 }
 
 .input-group input {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
+  padding: 1rem;
+  border: 1px solid #444;
+  background-color: var(--secondary-color);
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  color: var(--text-dark);
+  transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+    color: var(--text-light);
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: #42b883;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(66, 184, 131, 0.3);
 }
 
 .error-message {
-  color: #e74c3c;
-  margin-bottom: 1rem;
+  color: #ff6b6b;
+  margin-bottom: 1.5rem;
   font-weight: 500;
+  animation: shake 0.5s;
 }
 
 .extra-options {
   text-align: right;
-  margin-bottom: 1.5rem;
+  margin: -1rem 0 1.5rem;
 }
 
 .forgot-password {
-  color: #42b883;
+  color: var(--primary-color);
   text-decoration: none;
   font-size: 0.9rem;
+  transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  text-decoration: underline;
+  color: var(--primary-dark);
 }
 
 .login-button {
   width: 100%;
-  padding: 0.85rem;
+  padding: 1rem;
   border: none;
   border-radius: 8px;
-  background-color: #42b883;
-  color: white;
-  font-size: 1.2rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .login-button:hover {
-  background-color: #36a374;
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(66, 184, 131, 0.4);
 }
 
-.cancel-button {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 0.75rem;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  color: #333;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.cancel-button:hover {
-  background-color: #e9ecef;
-  border-color: #c0c0c0;
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 </style>

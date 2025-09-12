@@ -1,8 +1,15 @@
 <script setup>
+import { ref } from 'vue';
+
 const emit = defineEmits(['login']);
 
+const loginButtonRef = ref(null);
+
 const handleLogin = () => {
-  emit('login');
+  if (loginButtonRef.value) {
+    const buttonRect = loginButtonRef.value.getBoundingClientRect();
+    emit('login', { buttonRect });
+  }
 };
 </script>
 
@@ -14,7 +21,7 @@ const handleLogin = () => {
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
           <span>Subject Evaluator</span>
         </div>
-        <button class="login-button" @click="handleLogin">Log In</button>
+        <button ref="loginButtonRef" class="login-button" @click="handleLogin">Log In</button>
       </header>
 
       <main class="main-content">
@@ -85,18 +92,6 @@ const handleLogin = () => {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-:root {
-  --primary-color: #42b883;
-  --primary-dark: #36a374;
-  --secondary-color: #f0f2f5;
-  --feature-bg: #ffffff;
-  --text-dark: #2c3e50;
-  --text-light: #606f7b;
-  --white: #ffffff;
-  --font-family: 'Poppins', sans-serif;
-}
 
 .landing-page-container {
   background-color: var(--secondary-color);
