@@ -1,24 +1,23 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, defineProps } from 'vue';
 
-const ocrText = ref(`
-AR 111 Math 1 Math 2 Engl 1 Fil 1 AR 112 AR 113 AR 114 P.E. 1 NSTP 1
-Introduction to Design College Algebra Plane Trigonometry
-Study and Thinking Skills in English Komunikasyon sa Akademikong Filipino
-Architectural Visual Communication 1 Architectural Visual Communication 2
-Theory of Architecture 1 Physical Fitness and Gymnastics Civil Welfare Training Service
-Final Grade 2.2 2.2 2.0 1.3 2.1 2.5 2.3 2.0 1.5 1.5
-Units 3 3 3 3 3 2 2 2 3 2
-`);
+const props = defineProps({
+  extractedText: {
+    type: String,
+    default: ''
+  }
+});
 
 const parsedRows = computed(() => {
-  const words = ocrText.value.split(/\s+/).map(w => w.trim()).filter(w => w);
+  if (!props.extractedText) return [];
+
+  const words = props.extractedText.split(/\s+/).map(w => w.trim()).filter(w => w);
 
   const rows = [];
   let currentSubject = [];
 
-  const gradePattern = /^\d(\.\d)?$/; // matches 1.0, 2.5, 3.0, etc.
-  const unitPattern = /^[1-9]$/; // matches 1–9 only
+  const gradePattern = /^\d(\.\d)?$/;
+  const unitPattern = /^[1-9]$/;
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
@@ -29,11 +28,19 @@ const parsedRows = computed(() => {
         grade: word,
         units: words[i + 1]
       });
-      currentSubject = []; // reset
-      i++; // skip the unit we already consumed
+      currentSubject = [];
+      i++;
     } else {
       currentSubject.push(word);
     }
+  }
+
+  if (currentSubject.length > 0) {
+      rows.push({
+        subject: currentSubject.join(" ").trim(),
+        grade: '',
+        units: ''
+      });
   }
 
   return rows;
@@ -41,28 +48,22 @@ const parsedRows = computed(() => {
 </script>
 
 <template>
-  <!-- This is the main container for the transcript extract view. -->
-  <div class="p-6">
-    <!-- This is the title of the view. -->
-    <h2 class="text-xl font-bold mb-4">Transcript Extract</h2>
-
-    <!-- This is the table that displays the parsed transcript data. -->
-    <table class="w-full border-collapse border border-gray-400 text-sm">
-      <!-- This is the table header. -->
-      <thead class="bg-gray-200">
+  <div class="transcript-extract-container">
+    <h2>Transcript Extract</h2>
+    <p v-if="!extractedText" class="info-text">No transcript text has been extracted yet. Please upload a transcript in the "Upload TOR" section first.</p>
+    <table v-else class="results-table">
+      <thead>
         <tr>
-          <th class="border border-gray-400 px-2 py-1 text-left">Course / Subject</th>
-          <th class="border border-gray-400 px-2 py-1 text-center">Final Grade</th>
-          <th class="border border-gray-400 px-2 py-1 text-center">Units</th>
+          <th>Course / Subject</th>
+          <th>Final Grade</th>
+          <th>Units</th>
         </tr>
       </thead>
-      <!-- This is the table body. -->
       <tbody>
-        <!-- This loops through the parsed rows and displays each one in a table row. -->
         <tr v-for="(row, index) in parsedRows" :key="index">
-          <td class="border border-gray-300 px-2 py-1">{{ row.subject }}</td>
-          <td class="border border-gray-300 px-2 py-1 text-center">{{ row.grade }}</td>
-          <td class="border border-gray-300 px-2 py-1 text-center">{{ row.units }}</td>
+          <td>{{ row.subject }}</td>
+          <td>{{ row.grade }}</td>
+          <td>{{ row.units }}</td>
         </tr>
       </tbody>
     </table>
@@ -70,5 +71,48 @@ const parsedRows = computed(() => {
 </template>
 
 <style scoped>
+.transcript-extract-container h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+
+.info-text {
+  color: var(--text-light);
+  background-color: var(--feature-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid #444;
+  text-align: center;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  background-color: var(--feature-bg);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.results-table th,
+.results-table td {
+  border: 1px solid #444;
+  padding: 1rem 1.2rem;
+  text-align: left;
+}
+
+.results-table th {
+  background-color: #2a2a2a;
+  font-weight: 600;
+}
+
+.results-table td {
+    text-align: center;
+}
+
+.results-table td:first-child {
+    text-align: left;
+}
 
 </style>
