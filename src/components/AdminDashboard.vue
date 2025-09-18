@@ -7,6 +7,24 @@ const activeView = ref('dashboard');
 const handleLogout = () => {
   emit('logout');
 };
+
+const notifications = ref([
+  {
+    id: 1,
+    studentName: 'Juan dela Cruz',
+    message: 'A student has submitted their credentials for evaluation.',
+  },
+  {
+    id: 2,
+    studentName: 'Maria Clara',
+    message: 'A student has submitted their credentials for evaluation.',
+  },
+  {
+    id: 3,
+    studentName: 'Jose Rizal',
+    message: 'A student has submitted their credentials for evaluation.',
+  },
+]);
 </script>
 
 <template>
@@ -45,6 +63,17 @@ const handleLogout = () => {
          <div class="header">
             <h2>Dashboard</h2>
             <p>Welcome back, Admin. Here is an overview of pending tasks.</p>
+        </div>
+        <div class="notification-stack">
+          <div v-for="notification in notifications" :key="notification.id" class="notification-banner">
+            <div class="notification-content">
+              <p class="notification-message">{{ notification.message }}</p>
+              <p class="student-name">Student: {{ notification.studentName }}</p>
+            </div>
+            <button class="notification-button" @click="activeView = 'approvals'">
+              See more
+            </button>
+          </div>
         </div>
       </div>
 
@@ -184,5 +213,61 @@ const handleLogout = () => {
     color: var(--text-light);
     margin-bottom: 2.5rem;
     font-size: 1.1rem;
+}
+
+/* Notification Banners */
+.notification-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-banner {
+  background-color: #1F2937;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #374151;
+  transition: all 0.2s ease-in-out;
+}
+
+.notification-banner:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(66, 184, 131, 0.1);
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-message {
+  color: var(--text-dark);
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+}
+
+.student-name {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.notification-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.notification-button:hover {
+  background-color: var(--primary-dark);
 }
 </style>
