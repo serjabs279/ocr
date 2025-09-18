@@ -1,19 +1,28 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { createWorker } from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import TranscriptExtract from './TranscriptExtract.vue';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
 
+const props = defineProps({
+  notifications: {
+    type: Array,
+    required: true,
+  },
+});
+
 const emit = defineEmits(['logout']);
 
-const activeView = ref('upload');
+const activeView = ref('dashboard');
 const uploadedFile = ref(null);
 const filePreviewUrl = ref(null);
 const isExtracting = ref(false);
 const extractionProgress = ref(0);
 const extractedText = ref('');
+const isModalVisible = ref(false);
+const selectedNotification = ref(null);
 
 const handleFileUpload = (event) => {
   const target = event.target;
@@ -84,6 +93,16 @@ const handleExtraction = async () => {
   }
 };
 
+const openModal = (notification) => {
+  selectedNotification.value = notification;
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+  selectedNotification.value = null;
+};
+
 const handleLogout = () => {
   emit('logout');
 };
@@ -116,15 +135,27 @@ const handleLogout = () => {
             <div class="user-profile">
                 <div class="avatar">S</div>
                 <span>Student Name</span>
-                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18l6-6l-6-6"/></svg>
+                <button @click="handleLogout" class="logout-button-sidebar">Logout</button>
             </div>
         </div>
     </aside>
     <main class="main-content">
       <div v-if="activeView === 'dashboard'" class="view-container">
-         <div class="upload-header">
+        <div class="header">
             <h2>Dashboard</h2>
             <p>Welcome back, Student. Your academic overview is available here.</p>
+        </div>
+        <div class="notification-stack">
+          <div v-if="notifications.length === 0" class="no-notifications">
+            <p>You have no new notifications.</p>
+          </div>
+          <div v-else>
+            <div v-for="notification in notifications" :key="notification.id" class="notification-banner" @click="openModal(notification)">
+              <div class="notification-content">
+                <p class="notification-message">{{ notification.message }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -168,6 +199,20 @@ const handleLogout = () => {
         <TranscriptExtract :extractedText="extractedText" />
       </div>
     </main>
+
+    <div v-if="isModalVisible" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>{{ selectedNotification.title }}</h2>
+          <button @click="closeModal" class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div v-for="(step, index) in selectedNotification.steps" :key="index" class="step">
+            <p>{{ step }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -268,9 +313,12 @@ const handleLogout = () => {
     border: 2px solid #111827;
 }
 
-.user-profile svg {
-    margin-left: auto;
-    color: var(--text-light);
+.logout-button-sidebar {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
 }
 
 /* Main Content Area */
@@ -279,14 +327,14 @@ const handleLogout = () => {
   padding: 2.5rem 4rem;
 }
 
-.upload-header h2 {
+.header h2, .upload-header h2 {
     font-size: 1.875rem; /* 30px */
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-dark);
 }
 
-.upload-header p {
+.header p, .upload-header p {
     color: var(--text-light);
     margin-bottom: 2.5rem;
     font-size: 1.1rem;
@@ -403,5 +451,108 @@ const handleLogout = () => {
     background-color: var(--primary-color);
     border-radius: 4px;
     transition: width 0.3s ease;
+}
+
+/* Notification Styles */
+.notification-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-banner {
+  background-color: #1F2937;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #374151;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.notification-banner:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(66, 184, 131, 0.1);
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-message {
+  color: var(--text-dark);
+  font-weight: 500;
+  margin: 0;
+}
+
+.no-notifications {
+  text-align: center;
+  padding: 3rem;
+  background-color: #1F2937;
+  border-radius: 8px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1F2937;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-dark);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 2rem;
+  color: var(--text-light);
+}
+
+.modal-body .step {
+  margin-bottom: 1.25rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--primary-color);
+}
+
+.modal-body .step p {
+    margin: 0;
+    line-height: 1.6;
 }
 </style>

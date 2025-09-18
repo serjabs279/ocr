@@ -9,6 +9,7 @@ const showLoginModal = ref(false);
 const loggedIn = ref(false);
 const userType = ref(''); // student or admin
 const loginButtonRect = ref(null);
+const studentNotifications = ref([]);
 
 const handleShowLogin = ({ buttonRect }) => {
   loginButtonRect.value = buttonRect;
@@ -30,6 +31,10 @@ const handleLogout = () => {
   userType.value = '';
 };
 
+const addStudentNotification = (notification) => {
+  studentNotifications.value.push(notification);
+};
+
 const beforeEnter = (el) => {
   if (!loginButtonRect.value) return;
 
@@ -48,8 +53,16 @@ const beforeEnter = (el) => {
       </Transition>
     </div>
     <div v-else>
-      <StudentDashboard v-if="userType === 'student'" @logout="handleLogout" />
-      <AdminDashboard v-else-if="userType === 'admin'" @logout="handleLogout" />
+      <StudentDashboard 
+        v-if="userType === 'student'" 
+        @logout="handleLogout" 
+        :notifications="studentNotifications" 
+      />
+      <AdminDashboard 
+        v-else-if="userType === 'admin'" 
+        @logout="handleLogout"
+        @add-notification="addStudentNotification"
+      />
     </div>
   </div>
 </template>

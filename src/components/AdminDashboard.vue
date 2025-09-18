@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['logout', 'add-notification']);
 const activeView = ref('dashboard');
 const isModalVisible = ref(false);
 const activeApprovalId = ref(null);
@@ -120,10 +120,25 @@ const finalizeEvaluation = () => {
   if (activeApproval.value) {
     activeApproval.value.status = 'Evaluation Done';
 
-     notifications.value.unshift({
+    notifications.value.unshift({
       id: notifications.value.length + 1,
       studentName: activeApproval.value.studentName,
       message: `The evaluation for ${activeApproval.value.studentName} is complete.`,
+    });
+
+    emit('add-notification', {
+      id: Date.now(),
+      title: 'Evaluation Done',
+      message: 'Your subject evaluation has been approved... click to see more',
+      steps: [
+        'step1 go to the chair\'s office for advising',
+        'step2 collect your new curriculum and credited subjects form from the chair',
+        'step4 proceed to the registrar for enrolment',
+        'step5 collect your study load and pay your enrolemnt fee in the cashier',
+        'step 6 return to the registrar for her verification and signature',
+        'step 7 go back to the chair\'s office fornher signature and enrolment approval',
+        'note:Alwzys keep your Study load clean and dry',
+      ]
     });
 
     printEvaluation();
@@ -165,7 +180,7 @@ const printEvaluation = () => {
             <div class="user-profile">
                 <div class="avatar">A</div>
                 <span>Admin</span>
-                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18l6-6l-6-6"/></svg>
+                <button @click="handleLogout" class="logout-button-sidebar">Logout</button>
             </div>
         </div>
     </aside>
@@ -410,9 +425,12 @@ const printEvaluation = () => {
     border: 2px solid #111827;
 }
 
-.user-profile svg {
-    margin-left: auto;
-    color: var(--text-light);
+.logout-button-sidebar {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
 }
 
 /* Main Content Area */
@@ -705,7 +723,7 @@ const printEvaluation = () => {
     color: #111827;
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
-    font-size: 0.8rem;
+  font-size: 0.8rem;
     font-weight: 500;
 }
 
