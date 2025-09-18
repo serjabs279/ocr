@@ -1,5 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineProps, watch } from 'vue';
+
+const props = defineProps({
+  transcriptSubmissions: {
+    type: Array,
+    default: () => [],
+  },
+});
 
 const emit = defineEmits(['logout', 'add-notification']);
 const activeView = ref('dashboard');
@@ -62,6 +69,27 @@ const pendingApprovals = ref([
     ]
   },
 ]);
+
+watch(() => props.transcriptSubmissions, (newSubmissions) => {
+  newSubmissions.forEach(submission => {
+    if (!pendingApprovals.value.some(p => p.fileName === submission.fileName)) {
+        const newApproval = {
+            id: pendingApprovals.value.length + 1,
+            studentName: submission.studentName,
+            fileName: submission.fileName,
+            status: 'Pending',
+            torCourses: submission.torCourses,
+        };
+        pendingApprovals.value.push(newApproval);
+
+        notifications.value.unshift({
+            id: notifications.value.length + 1,
+            studentName: submission.studentName,
+            message: `A student has submitted their credentials for evaluation.`,
+        });
+    }
+  });
+}, { deep: true, immediate: true });
 
 const availableCourses = ref([
     { id: 'bsit-101', name: 'BSIT Course 1', units: 3 },

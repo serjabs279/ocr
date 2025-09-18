@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   extractedText: {
@@ -7,6 +7,8 @@ const props = defineProps({
     default: ''
   }
 });
+
+const emit = defineEmits(['submit-data']);
 
 const parsedRows = computed(() => {
   if (!props.extractedText) return [];
@@ -16,7 +18,7 @@ const parsedRows = computed(() => {
   const rows = [];
   let currentSubject = [];
 
-  const gradePattern = /^\d(\.\d)?$/;
+  const gradePattern = /^\d(\.\d{1,2})?$/;
   const unitPattern = /^[1-9]$/;
 
   for (let i = 0; i < words.length; i++) {
@@ -35,7 +37,7 @@ const parsedRows = computed(() => {
     }
   }
 
-  if (currentSubject.length > 0) {
+  if (currentSubject.length > 0 && currentSubject.join(" ").trim()) {
       rows.push({
         subject: currentSubject.join(" ").trim(),
         grade: '',
@@ -43,7 +45,13 @@ const parsedRows = computed(() => {
       });
   }
 
-  return rows;
+  return rows
+    .filter(row => row.subject)
+    .map(row => ({
+      id: row.subject.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: row.subject,
+      units: parseInt(row.units, 10) || 0,
+    }));
 });
 </script>
 
@@ -61,13 +69,13 @@ const parsedRows = computed(() => {
       </thead>
       <tbody>
         <tr v-for="(row, index) in parsedRows" :key="index">
-          <td>{{ row.subject }}</td>
+          <td>{{ row.name }}</td>
           <td>{{ row.grade }}</td>
           <td>{{ row.units }}</td>
         </tr>
       </tbody>
     </table>
-    <button v-if="extractedText" @click="$emit('extractData')" class="extract-button">Extract Data</button>
+    <button v-if="extractedText" @click="emit('submit-data', parsedRows)" class="extract-button">Submit for Evaluation</button>
   </div>
 </template>
 

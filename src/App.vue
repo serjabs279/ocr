@@ -10,6 +10,7 @@ const loggedIn = ref(false);
 const userType = ref(''); // student or admin
 const loginButtonRect = ref(null);
 const studentNotifications = ref([]);
+const transcriptSubmissions = ref([]);
 
 const handleShowLogin = ({ buttonRect }) => {
   loginButtonRect.value = buttonRect;
@@ -35,6 +36,10 @@ const addStudentNotification = (notification) => {
   studentNotifications.value.push(notification);
 };
 
+const handleSubmitTranscript = (submission) => {
+  transcriptSubmissions.value.push(submission);
+};
+
 const beforeEnter = (el) => {
   if (!loginButtonRect.value) return;
 
@@ -56,12 +61,14 @@ const beforeEnter = (el) => {
       <StudentDashboard 
         v-if="userType === 'student'" 
         @logout="handleLogout" 
-        :notifications="studentNotifications" 
+        :notifications="studentNotifications"
+        @submit-transcript="handleSubmitTranscript"
       />
       <AdminDashboard 
         v-else-if="userType === 'admin'" 
         @logout="handleLogout"
         @add-notification="addStudentNotification"
+        :transcriptSubmissions="transcriptSubmissions"
       />
     </div>
   </div>

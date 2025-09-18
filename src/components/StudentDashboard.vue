@@ -13,7 +13,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['logout', 'submit-transcript']);
 
 const activeView = ref('dashboard');
 const uploadedFile = ref(null);
@@ -93,6 +93,17 @@ const handleExtraction = async () => {
   }
 };
 
+const handleSubmitData = (torCourses) => {
+  emit('submit-transcript', {
+    studentName: 'Student Name', // Replace with actual student name
+    fileName: uploadedFile.value?.name || 'transcript.pdf',
+    torCourses,
+  });
+
+  alert('Your transcript has been submitted for evaluation!');
+  activeView.value = 'dashboard';
+};
+
 const openModal = (notification) => {
   selectedNotification.value = notification;
   isModalVisible.value = true;
@@ -113,7 +124,7 @@ const handleLogout = () => {
     <aside class="sidebar">
         <div>
             <div class="sidebar-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 <span>Subject Evaluator</span>
             </div>
             <nav class="sidebar-nav">
@@ -196,7 +207,7 @@ const handleLogout = () => {
       </div>
 
       <div v-if="activeView === 'extract'" class="view-container">
-        <TranscriptExtract :extractedText="extractedText" />
+        <TranscriptExtract :extractedText="extractedText" @submit-data="handleSubmitData" />
       </div>
     </main>
 
