@@ -25,6 +25,27 @@ const notifications = ref([
     message: 'A student has submitted their credentials for evaluation.',
   },
 ]);
+
+const pendingApprovals = ref([
+  {
+    id: 1,
+    studentName: 'Juan dela Cruz',
+    fileName: 'tor_juan_dela_cruz.pdf',
+    status: 'Pending',
+  },
+  {
+    id: 2,
+    studentName: 'Maria Clara',
+    fileName: 'tor_maria_clara.pdf',
+    status: 'Approved for Advising',
+  },
+  {
+    id: 3,
+    studentName: 'Jose Rizal',
+    fileName: 'tor_jose_rizal.pdf',
+    status: 'Pending',
+  },
+]);
 </script>
 
 <template>
@@ -82,6 +103,28 @@ const notifications = ref([
             <h2>Pending Approvals</h2>
             <p>Review and approve subject evaluations from transferee students.</p>
         </div>
+        <table class="approvals-table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>File Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="approval in pendingApprovals" :key="approval.id">
+              <td>{{ approval.studentName }}</td>
+              <td>
+                <a href="#" @click.prevent="alert('Showing extracted data for ' + approval.fileName)">{{ approval.fileName }}</a>
+              </td>
+              <td>
+                <span :class="['status-banner', `status-${approval.status.toLowerCase().replace(/ /g, '-')}`]">
+                  {{ approval.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div v-if="activeView === 'subjects'" class="view-container">
@@ -269,5 +312,53 @@ const notifications = ref([
 
 .notification-button:hover {
   background-color: var(--primary-dark);
+}
+
+/* Approvals Table */
+.approvals-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-dark);
+}
+
+.approvals-table th,
+.approvals-table td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid #374151;
+}
+
+.approvals-table th {
+  background-color: #1F2937;
+  font-weight: 600;
+}
+
+.approvals-table a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.approvals-table a:hover {
+  text-decoration: underline;
+}
+
+.status-banner {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background-color: #FBBF24;
+  color: #111827;
+}
+
+.status-approved-for-advising {
+  background-color: #34D399;
+  color: #111827;
 }
 </style>
