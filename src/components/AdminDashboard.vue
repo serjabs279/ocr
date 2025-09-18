@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const emit = defineEmits(['logout']);
 const activeView = ref('dashboard');
+const isModalVisible = ref(false);
+const activeApprovalId = ref(null);
 
 const handleLogout = () => {
   emit('logout');
@@ -32,20 +34,78 @@ const pendingApprovals = ref([
     studentName: 'Juan dela Cruz',
     fileName: 'tor_juan_dela_cruz.pdf',
     status: 'Pending',
+    torCourses: [
+      { id: 'math101', name: 'College Algebra', credits: 3 },
+      { id: 'eng101', name: 'English Composition', credits: 3 },
+      { id: 'cs101', name: 'Introduction to Computer Science', credits: 3 },
+    ]
   },
   {
     id: 2,
     studentName: 'Maria Clara',
     fileName: 'tor_maria_clara.pdf',
-    status: 'Approved for Advising',
+    status: 'Pending',
+    torCourses: [
+      { id: 'phy101', name: 'General Physics I', credits: 4 },
+      { id: 'chem101', name: 'General Chemistry I', credits: 4 },
+    ]
   },
   {
     id: 3,
     studentName: 'Jose Rizal',
     fileName: 'tor_jose_rizal.pdf',
     status: 'Pending',
+    torCourses: [
+      { id: 'hist101', name: 'Philippine History', credits: 3 },
+    ]
   },
 ]);
+
+const availableCourses = ref([
+    { id: 'bsit-101', name: 'BSIT Course 1', credits: 3 },
+    { id: 'bsit-102', name: 'BSIT Course 2', credits: 3 },
+    { id: 'bsit-103', name: 'BSIT Course 3', credits: 4 },
+    { id: 'bse-101', name: 'BSE Course 1', credits: 3 },
+    { id: 'bse-102', name: 'BSE Course 2', credits: 3 },
+]);
+
+const selectedTorCourseIds = ref([]);
+const selectedAvailableCourseIds = ref([]);
+
+const activeApproval = computed(() => 
+  pendingApprovals.value.find(a => a.id === activeApprovalId.value)
+);
+
+const handleStatusClick = (approval) => {
+  alert(`Status for ${approval.studentName} is currently ${approval.status}.`);
+};
+
+const openModal = (approval) => {
+  activeApprovalId.value = approval.id;
+  selectedTorCourseIds.value = approval.torCourses.map(c => c.id);
+  selectedAvailableCourseIds.value = [];
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+  activeApprovalId.value = null;
+};
+
+const saveEquivalency = () => {
+  if (activeApproval.value) {
+    activeApproval.value.status = 'Processing';
+
+    notifications.value.unshift({
+      id: notifications.value.length + 1,
+      studentName: activeApproval.value.studentName,
+      message: `The TOR of ${activeApproval.value.studentName} is now under evaluation.`,
+    });
+    
+    closeModal();
+  }
+};
+
 </script>
 
 <template>
@@ -115,10 +175,12 @@ const pendingApprovals = ref([
             <tr v-for="approval in pendingApprovals" :key="approval.id">
               <td>{{ approval.studentName }}</td>
               <td>
-                <a href="#" @click.prevent="alert('Showing extracted data for ' + approval.fileName)">{{ approval.fileName }}</a>
+                <a href="#" @click.prevent="openModal(approval)">{{ approval.fileName }}</a>
               </td>
               <td>
-                <span :class="['status-banner', `status-${approval.status.toLowerCase().replace(/ /g, '-')}`]">
+                <span 
+                  :class="['status-banner', `status-${approval.status.toLowerCase().replace(/ /g, '-')}`]"
+                  @click="handleStatusClick(approval)">
                   {{ approval.status }}
                 </span>
               </td>
@@ -133,6 +195,42 @@ const pendingApprovals = ref([
             <p>Manage the list of subjects and their corresponding evaluation criteria.</p>
         </div>
       </div>
+
+       <div v-if="isModalVisible && activeApproval" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Course Equivalency for {{ activeApproval.studentName }}</h2>
+          <button @click="closeModal" class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="course-panel">
+            <h3>Available Courses</h3>
+            <ul>
+              <li v-for="course in availableCourses" :key="course.id">
+                <label>
+                  <input type="checkbox" :value="course.id" v-model="selectedAvailableCourseIds">
+                  {{ course.name }} ({{ course.credits }} credits)
+                </label>
+              </li>
+            </ul>
+          </div>
+          <div class="course-panel">
+            <h3>Extracted TOR Courses</h3>
+            <ul>
+              <li v-for="course in activeApproval.torCourses" :key="course.id">
+                <label>
+                  <input type="checkbox" :value="course.id" v-model="selectedTorCourseIds">
+                   {{ course.name }} ({{ course.credits }} credits)
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button class="save-button" @click="saveEquivalency">Save Equivalency</button>
+        </div>
+      </div>
+    </div>
     </main>
   </div>
 </template>
@@ -315,7 +413,7 @@ const pendingApprovals = ref([
 }
 
 /* Approvals Table */
-.approvals-table {
+.approvals-.table {
   width: 100%;
   border-collapse: collapse;
   color: var(--text-dark);
@@ -350,6 +448,8 @@ const pendingApprovals = ref([
   font-size: 0.875rem;
   display: inline-block;
   text-transform: capitalize;
+  cursor: pointer;
+  user-select: none;
 }
 
 .status-pending {
@@ -357,8 +457,120 @@ const pendingApprovals = ref([
   color: #111827;
 }
 
+.status-processing {
+  background-color: #3B82F6;
+  color: #ffffff;
+}
+
 .status-approved-for-advising {
   background-color: #34D399;
   color: #111827;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1F2937;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1000px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-dark);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.course-panel {
+  flex: 1;
+  background-color: #111827;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.course-panel h3 {
+    color: var(--text-dark);
+    margin: 0 0 1.5rem 0;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 1rem;
+}
+
+.course-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.course-panel li {
+    margin-bottom: 1rem;
+}
+
+.course-panel label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-light);
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #374151;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.save-button:hover {
+    background-color: var(--primary-dark);
 }
 </style>
