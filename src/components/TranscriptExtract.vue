@@ -67,6 +67,7 @@ const parsedRows = computed(() => {
         </tr>
       </tbody>
     </table>
+    <button v-if="extractedText" @click="$emit('extractData')" class="extract-button">Extract Data</button>
   </div>
 </template>
 
@@ -115,4 +116,20 @@ const parsedRows = computed(() => {
     text-align: left;
 }
 
+.extract-button {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.extract-button:hover {
+  background-color: #4cae4c;
+}
 </style>

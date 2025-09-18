@@ -78,6 +78,9 @@ const handleExtraction = async () => {
     extractedText.value = 'Error during text extraction.';
   } finally {
     isExtracting.value = false;
+    if (extractedText.value && !extractedText.value.startsWith('Error')) {
+        activeView.value = 'extract';
+    }
   }
 };
 
@@ -141,6 +144,24 @@ const handleLogout = () => {
               <img :src="filePreviewUrl" alt="Transcript Preview" class="image-preview" />
             </div>
         </div>
+
+        <div v-if="uploadedFile" class="upload-actions">
+            <div class="file-info">
+                <span>{{ uploadedFile.name }}</span>
+            </div>
+            <button @click="handleExtraction" :disabled="isExtracting" class="extract-button">
+                <span v-if="isExtracting">Extracting...</span>
+                <span v-else>Extract</span>
+            </button>
+        </div>
+
+        <div v-if="isExtracting" class="progress-section">
+            <p>Extracting text... {{ extractionProgress }}%</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" :style="{ width: extractionProgress + '%' }"></div>
+            </div>
+        </div>
+
       </div>
 
       <div v-if="activeView === 'extract'" class="view-container">
@@ -321,5 +342,66 @@ const handleLogout = () => {
     width: 100%; height: 100%;
     object-fit: contain;
     border-radius: 6px;
+}
+
+.upload-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1F2937;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.file-info span {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.extract-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.extract-button:hover {
+  background-color: #36a374;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.extract-button:disabled {
+  background-color: #374151;
+  cursor: not-allowed;
+}
+
+.progress-section {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.progress-section p {
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #374151;
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    transition: width 0.3s ease;
 }
 </style>
