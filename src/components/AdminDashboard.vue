@@ -5,6 +5,8 @@ const emit = defineEmits(['logout']);
 const activeView = ref('dashboard');
 const isModalVisible = ref(false);
 const activeApprovalId = ref(null);
+const creditedCourses = ref([]);
+const chosenCourses = ref([]);
 
 const handleLogout = () => {
   emit('logout');
@@ -35,9 +37,9 @@ const pendingApprovals = ref([
     fileName: 'tor_juan_dela_cruz.pdf',
     status: 'Pending',
     torCourses: [
-      { id: 'math101', name: 'College Algebra', credits: 3 },
-      { id: 'eng101', name: 'English Composition', credits: 3 },
-      { id: 'cs101', name: 'Introduction to Computer Science', credits: 3 },
+      { id: 'math101', name: 'College Algebra', units: 3 },
+      { id: 'eng101', name: 'English Composition', units: 3 },
+      { id: 'cs101', name: 'Introduction to Computer Science', units: 3 },
     ]
   },
   {
@@ -46,8 +48,8 @@ const pendingApprovals = ref([
     fileName: 'tor_maria_clara.pdf',
     status: 'Pending',
     torCourses: [
-      { id: 'phy101', name: 'General Physics I', credits: 4 },
-      { id: 'chem101', name: 'General Chemistry I', credits: 4 },
+      { id: 'phy101', name: 'General Physics I', units: 4 },
+      { id: 'chem101', name: 'General Chemistry I', units: 4 },
     ]
   },
   {
@@ -56,17 +58,17 @@ const pendingApprovals = ref([
     fileName: 'tor_jose_rizal.pdf',
     status: 'Pending',
     torCourses: [
-      { id: 'hist101', name: 'Philippine History', credits: 3 },
+      { id: 'hist101', name: 'Philippine History', units: 3 },
     ]
   },
 ]);
 
 const availableCourses = ref([
-    { id: 'bsit-101', name: 'BSIT Course 1', credits: 3 },
-    { id: 'bsit-102', name: 'BSIT Course 2', credits: 3 },
-    { id: 'bsit-103', name: 'BSIT Course 3', credits: 4 },
-    { id: 'bse-101', name: 'BSE Course 1', credits: 3 },
-    { id: 'bse-102', name: 'BSE Course 2', credits: 3 },
+    { id: 'bsit-101', name: 'BSIT Course 1', units: 3 },
+    { id: 'bsit-102', name: 'BSIT Course 2', units: 3 },
+    { id: 'bsit-103', name: 'BSIT Course 3', units: 4 },
+    { id: 'bse-101', name: 'BSE Course 1', units: 3 },
+    { id: 'bse-102', name: 'BSE Course 2', units: 3 },
 ]);
 
 const selectedTorCourseIds = ref([]);
@@ -102,8 +104,36 @@ const saveEquivalency = () => {
       message: `The TOR of ${activeApproval.value.studentName} is now under evaluation.`,
     });
     
+    creditedCourses.value = activeApproval.value.torCourses.filter(course => 
+      selectedTorCourseIds.value.includes(course.id)
+    );
+
+    chosenCourses.value = availableCourses.value.filter(course =>
+      selectedAvailableCourseIds.value.includes(course.id)
+    );
+
     closeModal();
+    activeView.value = 'subjects';
   }
+};
+
+const finalizeEvaluation = () => {
+  if (activeApproval.value) {
+    activeApproval.value.status = 'Evaluation Done';
+
+     notifications.value.unshift({
+      id: notifications.value.length + 1,
+      studentName: activeApproval.value.studentName,
+      message: `The evaluation for ${activeApproval.value.studentName} is complete.`,
+    });
+
+    printEvaluation();
+    activeView.value = 'approvals';
+  }
+};
+
+const printEvaluation = () => {
+  window.print();
 };
 
 </script>
@@ -189,12 +219,60 @@ const saveEquivalency = () => {
         </table>
       </div>
 
-      <div v-if="activeView === 'subjects'" class="view-container">
-        <div class="header">
+       <div v-if="activeView === 'subjects'" class="view-container">
+        <div class="header no-print">
             <h2>Subject Management</h2>
-            <p>Manage the list of subjects and their corresponding evaluation criteria.</p>
+            <p>Review the credited subjects and the new curriculum for the student.</p>
         </div>
-      </div>
+
+        <div class="evaluation-layout" v-if="creditedCourses.length > 0 || chosenCourses.length > 0">
+            <div class="evaluation-tables">
+                <div class="table-container">
+                    <h3>Chosen Subjects</h3>
+                    <table class="evaluation-table">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Units</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="course in chosenCourses" :key="course.id">
+                                <td>{{ course.name }}</td>
+                                <td>{{ course.units }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-container">
+                    <h3>Credited Subjects</h3>
+                    <table class="evaluation-table">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Units</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="course in creditedCourses" :key="course.id">
+                                <td>{{ course.name }}</td>
+                                <td>{{ course.units }}</td>
+                                <td><span class="credited-tag">Credited</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="evaluation-actions no-print">
+                <button class="print-button" @click="finalizeEvaluation">Save as PDF and Print</button>
+            </div>
+        </div>
+         <div v-else class="no-evaluation">
+            <p>No evaluation data to display. Please process a student's application first.</p>
+        </div>
+    </div>
 
        <div v-if="isModalVisible && activeApproval" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
@@ -209,7 +287,7 @@ const saveEquivalency = () => {
               <li v-for="course in availableCourses" :key="course.id">
                 <label>
                   <input type="checkbox" :value="course.id" v-model="selectedAvailableCourseIds">
-                  {{ course.name }} ({{ course.credits }} credits)
+                  {{ course.name }} ({{ course.units }} units)
                 </label>
               </li>
             </ul>
@@ -220,7 +298,7 @@ const saveEquivalency = () => {
               <li v-for="course in activeApproval.torCourses" :key="course.id">
                 <label>
                   <input type="checkbox" :value="course.id" v-model="selectedTorCourseIds">
-                   {{ course.name }} ({{ course.credits }} credits)
+                   {{ course.name }} ({{ course.units }} units)
                 </label>
               </li>
             </ul>
@@ -413,7 +491,7 @@ const saveEquivalency = () => {
 }
 
 /* Approvals Table */
-.approvals-.table {
+.approvals-table {
   width: 100%;
   border-collapse: collapse;
   color: var(--text-dark);
@@ -460,6 +538,11 @@ const saveEquivalency = () => {
 .status-processing {
   background-color: #3B82F6;
   color: #ffffff;
+}
+
+.status-evaluation-done {
+    background-color: #10B981;
+    color: #ffffff;
 }
 
 .status-approved-for-advising {
@@ -572,5 +655,111 @@ const saveEquivalency = () => {
 
 .save-button:hover {
     background-color: var(--primary-dark);
+}
+
+/* Subject Management */
+.evaluation-layout {
+    background-color: #1F2937;
+    border-radius: 8px;
+    padding: 2rem;
+    border: 1px solid #374151;
+}
+
+.evaluation-tables {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.table-container {
+    flex: 1;
+}
+
+.table-container h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.evaluation-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #374151;
+}
+
+.evaluation-table th, .evaluation-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #374151;
+    color: var(--text-light);
+}
+
+.evaluation-table th {
+    color: var(--text-dark);
+    font-weight: 600;
+    background-color: #111827;
+}
+
+.credited-tag {
+    background-color: #34D399;
+    color: #111827;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.print-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.print-button:hover {
+    background-color: var(--primary-dark);
+}
+
+.no-evaluation {
+    text-align: center;
+    padding: 3rem;
+    background-color: #1F2937;
+    border-radius: 8px;
+}
+
+@media print {
+  .no-print, .sidebar, .header, .notification-stack, .approvals-table, .modal-overlay, .evaluation-actions {
+    display: none;
+  }
+
+  .main-content {
+      padding: 0;
+  }
+
+  .evaluation-layout {
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+  }
+
+  .evaluation-table th, .evaluation-table td, .table-container h3 {
+      color: #000000 !important;
+      border-color: #dddddd !important;
+  }
+
+  .evaluation-table th {
+      background-color: #f2f2f2 !important;
+  }
+
+  .credited-tag {
+      background-color: #34D399 !important;
+      color: #111827 !important;
+      -webkit-print-color-adjust: exact; 
+      print-color-adjust: exact;
+  }
 }
 </style>
