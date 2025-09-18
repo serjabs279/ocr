@@ -228,7 +228,7 @@ const printEvaluation = () => {
         <div class="evaluation-layout" v-if="creditedCourses.length > 0 || chosenCourses.length > 0">
             <div class="evaluation-tables">
                 <div class="table-container">
-                    <h3>Chosen Subjects</h3>
+                    <h3>New Curriculum Subjects</h3>
                     <table class="evaluation-table">
                         <thead>
                             <tr>
