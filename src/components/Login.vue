@@ -16,13 +16,13 @@ const handleLogin = () => {
 
   if (userType.value === 'student') {
     if (email.value === mockStudent.email && password.value === mockStudent.password) {
-      emit('login-success');
+      emit('login-success', 'student');
     } else {
       errorMessage.value = 'Invalid student credentials.';
     }
   } else if (userType.value === 'admin') {
     if (email.value === mockAdmin.email && password.value === mockAdmin.password) {
-      emit('login-success');
+      emit('login-success', 'admin');
     } else {
       errorMessage.value = 'Invalid admin credentials.';
     }

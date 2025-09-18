@@ -3,9 +3,11 @@ import { ref } from 'vue';
 import LandingPage from './components/LandingPage.vue';
 import Login from './components/Login.vue';
 import StudentDashboard from './components/StudentDashboard.vue';
+import AdminDashboard from './components/AdminDashboard.vue';
 
 const showLoginModal = ref(false);
 const loggedIn = ref(false);
+const userType = ref(''); // student or admin
 const loginButtonRect = ref(null);
 
 const handleShowLogin = ({ buttonRect }) => {
@@ -17,13 +19,15 @@ const handleCloseLogin = () => {
   showLoginModal.value = false;
 };
 
-const handleLoginSuccess = () => {
+const handleLoginSuccess = (type) => {
   loggedIn.value = true;
+  userType.value = type;
   showLoginModal.value = false;
 };
 
 const handleLogout = () => {
   loggedIn.value = false;
+  userType.value = '';
 };
 
 const beforeEnter = (el) => {
@@ -43,7 +47,10 @@ const beforeEnter = (el) => {
         <Login v-if="showLoginModal" @close-login="handleCloseLogin" @login-success="handleLoginSuccess" />
       </Transition>
     </div>
-    <StudentDashboard v-else @logout="handleLogout" />
+    <div v-else>
+      <StudentDashboard v-if="userType === 'student'" @logout="handleLogout" />
+      <AdminDashboard v-else-if="userType === 'admin'" @logout="handleLogout" />
+    </div>
   </div>
 </template>
 
