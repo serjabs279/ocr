@@ -91,7 +91,6 @@ const openModal = (approval) => {
 
 const closeModal = () => {
   isModalVisible.value = false;
-  activeApprovalId.value = null;
 };
 
 const saveEquivalency = () => {
@@ -129,6 +128,7 @@ const finalizeEvaluation = () => {
 
     printEvaluation();
     activeView.value = 'approvals';
+    activeApprovalId.value = null; 
   }
 };
 
@@ -748,7 +748,7 @@ const printEvaluation = () => {
 
   .evaluation-table th, .evaluation-table td, .table-container h3 {
       color: #000000 !important;
-      border-color: #dddddd !important;
+      border-color: #dddddd !importan;
   }
 
   .evaluation-table th {
